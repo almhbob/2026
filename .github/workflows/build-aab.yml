@@ -1,5 +1,36 @@
-- name: Build AAB + APK
-        run: cd app/android && ./gradlew bundleRelease assembleRelease
+name: Build Android AAB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm install
+
+      - name: Expo Prebuild
+        run: |
+          cd app
+          npx expo prebuild --platform android --clean
+
+      - name: Build AAB and APK
+        run: |
+          cd app/android
+          chmod +x gradlew
+          ./gradlew bundleRelease assembleRelease
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
