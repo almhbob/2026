@@ -8,19 +8,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - run: npm install
+      - name: Install dependencies
+        run: cd app && npm install
 
-      - run: npx expo prebuild --platform android
+      - name: Expo Prebuild
+        run: cd app && npx expo prebuild --platform android --clean
 
-      - run: cd android && ./gradlew bundleRelease
+      - name: Build AAB
+        run: cd app/android && ./gradlew bundleRelease
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: android/app/build/outputs/bundle/release/app-release.aab
+          path: app/android/app/build/outputs/bundle/release/app-release.aab
