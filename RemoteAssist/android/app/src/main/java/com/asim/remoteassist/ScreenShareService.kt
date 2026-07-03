@@ -69,7 +69,7 @@ class ScreenShareService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                "RemoteAssist screen sharing",
+                "مشاركة شاشة RemoteAssist",
                 NotificationManager.IMPORTANCE_LOW
             )
             manager.createNotificationChannel(channel)
