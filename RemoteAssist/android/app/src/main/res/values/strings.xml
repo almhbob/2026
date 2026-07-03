@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RemoteAssist</string>
+    <string name="accessibility_summary">RemoteAssist Control</string>
+    <string name="accessibility_description">يسمح بتنفيذ لمسات المستخدم البعيد أثناء جلسة دعم فني وافق عليها صاحب الهاتف.</string>
+</resources>
