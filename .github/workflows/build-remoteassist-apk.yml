@@ -1,0 +1,54 @@
+name: Build RemoteAssist APK
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'RemoteAssist/android/**'
+      - '.github/workflows/build-remoteassist-apk.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'RemoteAssist/android/**'
+      - '.github/workflows/build-remoteassist-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.10.2
+
+      - name: Lint
+        working-directory: RemoteAssist/android
+        run: gradle :app:lintDebug --no-daemon
+
+      - name: Build debug APK
+        working-directory: RemoteAssist/android
+        run: gradle :app:assembleDebug --no-daemon
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoteAssist-lint-report
+          path: RemoteAssist/android/app/build/reports/lint-results-debug.html
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoteAssist-debug-apk
+          path: RemoteAssist/android/app/build/outputs/apk/debug/app-debug.apk
