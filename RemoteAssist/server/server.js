@@ -45,9 +45,14 @@ wss.on('connection', (ws) => {
         safeSend(ws, JSON.stringify({ type: 'error', message: 'Session code is required' }));
         return;
       }
+      const room = getRoom(code);
+      if ([...room].some((client) => client.role === role)) {
+        safeSend(ws, JSON.stringify({ type: 'error', message: `Session already has a ${role}` }));
+        return;
+      }
       ws.code = code;
       ws.role = role;
-      getRoom(code).add(ws);
+      room.add(ws);
       safeSend(ws, JSON.stringify({ type: 'joined', role, code }));
       broadcastToRoom(code, ws, JSON.stringify({ type: 'peer_joined', role }), null);
       return;

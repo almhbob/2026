@@ -32,9 +32,20 @@ jobs:
         with:
           gradle-version: 8.10.2
 
+      - name: Lint
+        working-directory: RemoteAssist/android
+        run: gradle :app:lintDebug --no-daemon
+
       - name: Build debug APK
         working-directory: RemoteAssist/android
         run: gradle :app:assembleDebug --no-daemon
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoteAssist-lint-report
+          path: RemoteAssist/android/app/build/reports/lint-results-debug.html
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
