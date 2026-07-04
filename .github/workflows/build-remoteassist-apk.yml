@@ -32,6 +32,10 @@ jobs:
         with:
           gradle-version: 8.10.2
 
+      - name: Unit tests
+        working-directory: RemoteAssist/android
+        run: gradle :app:testDebugUnitTest --no-daemon
+
       - name: Lint
         working-directory: RemoteAssist/android
         run: gradle :app:lintDebug --no-daemon
