@@ -23,6 +23,31 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    // Release signing comes from environment variables (set from CI secrets, or exported
+    // locally) instead of being hardcoded, so the keystore and its passwords never end up in
+    // source control. Without them, `assembleRelease` still works but produces an unsigned APK -
+    // the same fallback Android Studio uses when a release build has no configured signing.
+    val releaseKeystorePath = System.getenv("RELEASE_KEYSTORE_PATH")
+    signingConfigs {
+        if (releaseKeystorePath != null) {
+            create("release") {
+                storeFile = file(releaseKeystorePath)
+                storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            if (releaseKeystorePath != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+    }
 }
 
 dependencies {
