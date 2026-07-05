@@ -60,12 +60,21 @@ jobs:
       # Only runs once RELEASE_KEYSTORE_BASE64 and friends are added as repository secrets
       # (see RemoteAssist/BUILD_APK.md). Until then these steps are skipped and only the
       # debug APK above is produced.
+      - name: Check for release signing secret
+        id: release_secret
+        run: |
+          if [ -n "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Decode release keystore
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        if: steps.release_secret.outputs.present == 'true'
         run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > RemoteAssist/android/app/release.jks
 
       - name: Build signed release APK
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        if: steps.release_secret.outputs.present == 'true'
         working-directory: RemoteAssist/android
         env:
           RELEASE_KEYSTORE_PATH: release.jks
@@ -75,7 +84,7 @@ jobs:
         run: gradle :app:assembleRelease --no-daemon
 
       - name: Upload signed release APK
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+        if: steps.release_secret.outputs.present == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: RemoteAssist-release-apk
