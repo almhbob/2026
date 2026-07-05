@@ -31,3 +31,26 @@ gradle :app:assembleDebug
 ```text
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+## بناء Release موقّع (لتقليل حظر Google Play Protect)
+
+APK Debug (أعلاه) موقّع بشهادة Debug المشتركة نفسها في كل مثبّتات Android Studio في العالم، وهذا أحد أكبر أسباب تصنيف أنظمة الحماية له كخطر. لبناء نسخة Release موقّعة بمفتاحك الخاص:
+
+1. أضف 4 أسرار (Secrets) في المستودع من `Settings > Secrets and variables > Actions`:
+   - `RELEASE_KEYSTORE_BASE64` — محتوى ملف الـ keystore مُرمّز بصيغة base64 (`base64 -w0 your.jks`).
+   - `RELEASE_KEYSTORE_PASSWORD`
+   - `RELEASE_KEY_ALIAS`
+   - `RELEASE_KEY_PASSWORD`
+2. شغّل وركفلو `Build RemoteAssist APK` — سيضيف تلقائياً خطوتين إضافيتين لبناء ورفع `RemoteAssist-release-apk` بمجرد توفر هذه الأسرار الأربعة.
+3. **احتفظ بملف الـ keystore وكلمات المرور في مكان آمن دائم.** فقدانه يعني عدم القدرة على إصدار أي تحديث مستقبلي بنفس التوقيع أبداً — لا يمكن استرجاعه أو توليد بديل متوافق معه.
+
+للبناء محلياً بنفس الطريقة دون CI:
+
+```bash
+export RELEASE_KEYSTORE_PATH=/path/to/your.jks
+export RELEASE_KEYSTORE_PASSWORD=...
+export RELEASE_KEY_ALIAS=...
+export RELEASE_KEY_PASSWORD=...
+cd android
+gradle :app:assembleRelease
+```

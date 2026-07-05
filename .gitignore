@@ -9,6 +9,8 @@ yarn-error.*
 build/
 *.apk
 *.aab
+*.jks
+*.keystore
 local.properties
 .cxx/
 *.iml
