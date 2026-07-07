@@ -68,6 +68,14 @@ function getMovesForPiece(board, from, player, options = {}) {
   return [...captureMoves, ...normalMoves];
 }
 
+function getCaptureMovesForPiece(board, from, player) {
+  return getMovesForPiece(board, from, player, { onlyCaptures: true });
+}
+
+function hasMoreCaptures(board, from, player) {
+  return getCaptureMovesForPiece(board, from, player).length > 0;
+}
+
 function getAllMoves(board, player, options = {}) {
   const allMoves = [];
   const captureMoves = [];
@@ -78,13 +86,14 @@ function getAllMoves(board, player, options = {}) {
       if (move.type === 'capture') captureMoves.push(move);
     }
   });
+  if (options.onlyCaptures) return captureMoves;
   return options.forcedCapture && captureMoves.length > 0 ? captureMoves : allMoves;
 }
 
 function applyMove(board, move, player) {
   if (!move || board[move.from] !== player || board[move.to] !== null) return { ok: false, board, reason: 'invalid-move' };
   const legal = getMovesForPiece(board, move.from, player).some(
-    (candidate) => candidate.to === move.to && candidate.capture === move.capture
+    (candidate) => candidate.to === move.to && candidate.capture === move.capture && candidate.type === move.type
   );
   if (!legal) return { ok: false, board, reason: 'illegal-move' };
   const nextBoard = [...board];
@@ -113,6 +122,16 @@ function getMoveHintText(move) {
   return move.type === 'capture' ? 'قفزة قاتلة' : 'حركة آمنة';
 }
 
+function updateDonkeyScores(scores, winner, loser) {
+  const nextScores = { ...scores };
+  if (nextScores[winner] > 0) {
+    nextScores[winner] -= 1;
+  } else {
+    nextScores[loser] += 1;
+  }
+  return nextScores;
+}
+
 module.exports = {
   BOARD_SIZE,
   TOTAL_CELLS,
@@ -125,9 +144,12 @@ module.exports = {
   opponentOf,
   countPieces,
   getMovesForPiece,
+  getCaptureMovesForPiece,
+  hasMoreCaptures,
   getAllMoves,
   applyMove,
   findMove,
   getGameStatus,
   getMoveHintText,
+  updateDonkeyScores,
 };
