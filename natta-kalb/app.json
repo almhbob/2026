@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "نطة كلب",
+    "slug": "natta-kalb",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.almhbob.nattakalb"
+    },
+    "android": {
+      "package": "com.almhbob.nattakalb",
+      "edgeToEdgeEnabled": true
+    },
+    "extra": {
+      "game": {
+        "heritage": "Sudanese board game",
+        "board": "5x5",
+        "piecesPerPlayer": 12
+      }
+    }
+  }
+}
